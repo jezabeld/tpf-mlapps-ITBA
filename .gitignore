@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Archivos locales
+notas.md
+*.csv
+kaggle.json
+*.delete

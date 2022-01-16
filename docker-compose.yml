@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  jupyter:
+    image: jupyter/datascience-notebook:latest
+    ports:
+      - 8888:8888
+    environment:
+      JUPYTER_ENABLE_LAB: "yes"
+      JUPYTER_TOKEN: "docker"
+    # env_file: .env
+    volumes:
+      - .:/home/jovyan/work
+
+  python:
+    image: python:3
+    command: bash
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
+    volumes:
+      - ./data/:/home/
