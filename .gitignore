@@ -133,3 +133,5 @@ notas.md
 *.csv
 kaggle.json
 *.delete
+logs/*
+*.jpg

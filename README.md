@@ -33,7 +33,7 @@ Por ahora, su propia computadora tendrá que hacerlo.
 
 ## Objetivo:
 
-Crear un DAG de Airflow que actúe de ETL para extraer extraiga datos estáticos S3
+Crear un DAG de Airflow que actúe de ETL para extraer datos estáticos de S3
 y los cargue en una base de datos de Postgres.
 
 ## Datos a utilizar:

@@ -25,3 +25,12 @@ Fast exploration of the data: [Jupyter Notebook](./jupyter/Exploratory.ipynb).
 
 ## 4) Outlier detection algorithm.
 Creation of a very naive outlier detection: [Jupyter Notebook](./jupyter/Outlier_detection.ipynb).
+
+## 5) Local Airflow and Postgres.
+Creation of a local architecture to start using Airflow and Postgres. A local folder will replace the bucket for now.
+
+## 6) Data Model Definition.
+Data model definition, DB connections.
+
+## 7) Dag to load the data into Postgres.
+First version of the DAG.
