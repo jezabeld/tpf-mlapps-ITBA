@@ -135,3 +135,4 @@ kaggle.json
 *.delete
 logs/*
 *.jpg
+aws

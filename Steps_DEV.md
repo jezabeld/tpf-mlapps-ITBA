@@ -34,3 +34,33 @@ Data model definition, DB connections.
 
 ## 7) Dag to load the data into Postgres.
 First version of the DAG.
+
+## 8) Config AWS CLI in docker container.
+```bash
+# run docker container
+docker run -it -v `pwd`/dags/data/:/home/ --name python python:3 bash
+cd /home
+# download and install CLI
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+./aws/install
+# test
+which aws
+/usr/local/bin/aws --version
+# remove the zip file
+rm awscliv2.zip
+```
+Optionally an AWS docker container can be used: [AWS CLI Docker](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2-docker.html).
+
+To configure the account:
+```bash
+aws configure
+# AWS Access Key ID [None]: AKIAIOSFODNN7EXAMPLE
+# AWS Secret Access Key [None]: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+# Default region name [None]: us-west-2
+# Default output format [None]: json
+```
+
+## 9) Scketch final architecture.
+Info about AWS MWAA: [Apache Airflow 2.0 on Amazon MWAA](https://www.youtube.com/watch?v=79IyGdIU7FA)
+Tutorial with a local docker container: (https://docs.aws.amazon.com/mwaa/latest/userguide/tutorials-docker.html).
