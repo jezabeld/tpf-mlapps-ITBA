@@ -136,3 +136,12 @@ kaggle.json
 logs/*
 *.jpg
 aws
+
+# from mwaa
+/git
+*.workspace
+dags/**/*.pyc
+/.idea
+/logs
+/db-data
+__pycache__/
