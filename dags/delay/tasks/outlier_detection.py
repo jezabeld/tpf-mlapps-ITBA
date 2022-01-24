@@ -37,7 +37,7 @@ def keys_in_db(pg_cli, origin, date):
     return rbool
 
 def drop_data_from_db(user, passw, db_url, db_name, year):
-    pg_cli = PostgresClient(db_name, user, passw, db_url)
+    pg_cli = PostgresClient(db_name, 'RDSpostgres')  #user, passw, db_url)
     session = pg_cli.get_session()
     rows_deleted = session.query(DepDelay).filter(DepDelay.date.startswith(f'{year}')).delete(synchronize_session='fetch')
     session.commit()
@@ -45,7 +45,7 @@ def drop_data_from_db(user, passw, db_url, db_name, year):
 
 def insert_to_db(data, user, passw, db_url, db_name):
     """Inserts data into db if not exists. """
-    pg_cli = PostgresClient(db_name, user, passw, db_url)
+    pg_cli = PostgresClient(db_name, 'RDSpostgres') #user, passw, db_url)
     session = pg_cli.get_session()
     existing = []
     if isinstance(data,DepDelay) :

@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 
 def get_data_from_db(db_name, user, passw, db_url, year, origin=None):
-    pg_cli = PostgresClient(db_name, user, passw, db_url)
+    pg_cli = PostgresClient(db_name, 'RDSpostgres') #user, passw, db_url)
     if origin:
         query = f"""SELECT * 
                     FROM dep_delay 

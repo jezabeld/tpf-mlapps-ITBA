@@ -3,6 +3,9 @@ from sqlalchemy import create_engine, MetaData
 from sqlalchemy.orm import sessionmaker
 import pandas as pd
 
+from airflow.providers.postgres.hooks.postgres import PostgresHook
+from sqlalchemy.engine import Engine
+
 class AbstractDbClient:
     """Base class to implement DB Connection."""
     def __init__(self, db, user= None, passw= None, host=None, driver=None, port=None):
@@ -60,21 +63,32 @@ class SqLiteClient(AbstractDbClient):
             self._engine = create_engine(db_uri)
         return self._engine
 
+# class PostgresClient(AbstractDbClient):
+#     def __init__(self, db, user, passw, host, port=None, driver='psycopg2'):
+#         self._user = user
+#         self._passw = passw
+#         self._host = host
+#         self._port = port
+#         self._driver=driver
+#         AbstractDbClient.__init__(self, db)
+
+#     def _get_engine(self):
+#         aux_conn=f'postgresql'
+#         aux_conn+= f'+{self._driver}' if self._driver else ''
+#         aux_host = f'{self._host}'
+#         aux_host+= f'+{self._port}' if self._port else ''
+#         db_uri = f'{aux_conn}://{self._user}:{self._passw}@{aux_host}/{self.db}'
+#         if not self._engine:
+#             self._engine = create_engine(db_uri)
+#         return self._engine
+
 class PostgresClient(AbstractDbClient):
-    def __init__(self, db, user, passw, host, port=None, driver='psycopg2'):
-        self._user = user
-        self._passw = passw
-        self._host = host
-        self._port = port
-        self._driver=driver
+    def __init__(self, db, postgres_conn):
+        self.postgres_conn = postgres_conn
         AbstractDbClient.__init__(self, db)
 
     def _get_engine(self):
-        aux_conn=f'postgresql'
-        aux_conn+= f'+{self._driver}' if self._driver else ''
-        aux_host = f'{self._host}'
-        aux_host+= f'+{self._port}' if self._port else ''
-        db_uri = f'{aux_conn}://{self._user}:{self._passw}@{aux_host}/{self.db}'
+        pg_hook = PostgresHook(postgres_conn_id=self.postgres_conn)
         if not self._engine:
-            self._engine = create_engine(db_uri)
+            self._engine: Engine = pg_hook.get_sqlalchemy_engine()
         return self._engine

@@ -11,7 +11,7 @@ def init_db(user, passw, db_url, db_name):
     stmt = f"CREATE SCHEMA IF NOT EXISTS {db_name}"
     event.listen(Base.metadata, 'before_create', DDL(stmt))
     #crea la connexion a la base
-    pg_cli = PostgresClient(db_name, user, passw, db_url)
+    pg_cli = PostgresClient(db_name, 'RDSpostgres')#user, passw, db_url)
     # crea las tablas definidas para la Base
     Base.metadata.create_all(bind=pg_cli._get_engine())
 

@@ -55,8 +55,8 @@ x-airflow-common:
     - ./logs:/opt/airflow/logs
     - ./plugins:/opt/airflow/plugins
   user: "${AIRFLOW_UID:-50000}:${AIRFLOW_GID:-0}"
-  mem_limit: 1500m
-  mem_reservation: 1g
+  mem_limit: 1200m
+  mem_reservation: 800m
   depends_on:
     redis:
       condition: service_healthy
@@ -106,7 +106,7 @@ services:
       timeout: 30s
       retries: 50
     restart: always
-    mem_limit: 1500m
+    mem_limit: 1200m
     mem_reservation: 1g
 
   airflow-webserver:
@@ -210,19 +210,19 @@ services:
     volumes:
       - .:/sources
 
-  jupyter:
-    image: jupyter/datascience-notebook:latest
-    container_name: jupyter
-    ports:
-      - 8888:8888
-    environment:
-      JUPYTER_ENABLE_LAB: "yes"
-      JUPYTER_TOKEN: "docker"
-    # env_file: .env
-    volumes:
-      - .:/home/jovyan/work
-    mem_limit: 1600m
-    mem_reservation: 1000m
+  # jupyter:
+  #   image: jupyter/datascience-notebook:latest
+  #   container_name: jupyter
+  #   ports:
+  #     - 8888:8888
+  #   environment:
+  #     JUPYTER_ENABLE_LAB: "yes"
+  #     JUPYTER_TOKEN: "docker"
+  #   # env_file: .env
+  #   volumes:
+  #     - .:/home/jovyan/work
+  #   mem_limit: 1600m
+  #   mem_reservation: 1000m
 
   # python:
   #   image: python:3
