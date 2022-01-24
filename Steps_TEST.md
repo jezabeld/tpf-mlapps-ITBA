@@ -21,3 +21,31 @@ Password: test
 
 To install libraries in this environment, copy them in ./dags/requirements.txt. This file emulates the requirements file in S3 bucket in the real environment.
 
+## 2) Emulate final environment.
+
+### Airflow Settings
+In the prod env, is going to be needed to configure new DAGs to be created _not paused_ by setting `dags_are_paused_at_creation = False` in order to automatically start when env is created. How to configure this in MWAA: [configuring-env-variables](https://docs.aws.amazon.com/mwaa/latest/userguide/configuring-env-variables.html).
+
+### S3 bucket
+To emulate the final S3 bucket, I'm going to be using ./dags/data folder for now.
+How to connect to S3: [example code](https://docs.aws.amazon.com/mwaa/latest/userguide/samples-dag-run-info-to-csv.html).
+How to read and write from pandas to S3: [example code](https://towardsdatascience.com/reading-and-writing-files-from-to-amazon-s3-with-pandas-ccaf90bfe86c). How to write image to bucket: [example code](https://stackoverflow.com/questions/31485660/python-uploading-a-plot-from-memory-to-s3-using-matplotlib-and-boto).
+
+Functions to read files and write images to bucket and folders created in ./dags/utils/functions.py
+
+### RDS database
+To emulate the prod-db, a container named RDSdatabase was added in in docker-compose-local.yml. To be able to store the credentials in a secret manager and use it, it was necessary to use the Airflow Connections. In the local env, the connections was created through de UI, but in the prod env this will be accomplished setiting up a Secret Manager Backend for Airflow: [Move your Apache Airflow connections and variables to AWS Secrets Manager](https://awscloudfeed.com/whats-new/open-source/move-your-apache-airflow-connections-and-variables-to-aws-secrets-manager).
+
+### Environment variables from Secret Manager
+In this testing env, I'll just add a .env file in docker-compose-local.yml.
+How to set Fernet Key: [secure-connections](https://airflow.apache.org/docs/apache-airflow/1.10.12/howto/secure-connections.html).
+
+How to connect MWAA to Secret Manager: [connections-secrets-manager](https://docs.aws.amazon.com/mwaa/latest/userguide/connections-secrets-manager.html).
+How to use variables in Secret Manager: [Airflow connections](https://docs.aws.amazon.com/mwaa/latest/userguide/samples-secrets-manager.html).
+
+
+## 3) Architecture sketch.
+First architecture diagram in [DrawIO](https://app.diagrams.net/?mode=github#Hjezabeld%2Ftpf-mlapps-ITBA%2Ftest%2FArchitecture.png).
+
+
+Terraform template: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/mwaa_environment

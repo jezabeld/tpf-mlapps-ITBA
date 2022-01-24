@@ -2,24 +2,21 @@ from airflow.macros import datetime
 import os
 from pathlib import Path
 from airflow import DAG
+from airflow.models import Connection, Variable
 from airflow.operators.python import PythonOperator
 
 from delay.tasks.create_tables import init_db
 from delay.tasks.outlier_detection import get_data_to_db
 from delay.tasks.plot import plot_generator
 
+from utils.functions import read_dbconn_from_env, read_dbconn_from_var
+
 # Env vars and definitions
-db_data = {
-    'user': os.getenv('DATABASE_USERNAME'),
-    'passw': os.getenv('DATABASE_PASSWORD'),
-    'db_url': os.getenv('DATABASE_URL'),
-    'db_name': os.getenv('DATABASE_NAME'),
-    }
+db_data = read_dbconn_from_env()
 
 RAW_DATA = os.getenv('DATA_LOCATION')
 PLOT_DIR = os.getenv('PLOT_DIR')
 
-ROOT_DIR = Path(__file__).parent.resolve()
 
 # Dag definition
 with DAG(
@@ -49,7 +46,7 @@ with DAG(
         python_callable=plot_generator,
         op_kwargs= {
             **db_data,
-            'location': PLOT_DIR,
+            'location': RAW_DATA,
             'year': '{{ macros.ds_format(ds , "%Y-%m-%d", "%Y")}}',
         }
     )

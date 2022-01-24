@@ -21,6 +21,7 @@ services:
         environment:
             - LOAD_EX=n
             - EXECUTOR=Local
+        env_file: .env
         logging:
             options:
                 max-size: 10m
@@ -36,3 +37,20 @@ services:
             interval: 30s
             timeout: 30s
             retries: 3
+
+    RDSdatabase:
+        image: postgres:13
+        container_name: RDSdatabase
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+            POSTGRES_DB: postgres
+        healthcheck:
+            test: ["CMD", "pg_isready", "-U", "postgres"]
+            interval: 5s
+            retries: 5
+        volumes:
+            - rds-db-volume:/var/lib/postgresql/data
+
+volumes:
+    rds-db-volume: 

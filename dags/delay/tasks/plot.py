@@ -2,12 +2,14 @@
 import argparse
 from utils.models import DepDelay
 from utils.db_connections import PostgresClient
+from utils.functions import save_img_to_bucket, save_img_to_folder
 
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
+import matplotlib.dates as mdates
 
-def get_data_from_db(db_name, user, passw, db_url, year, origin=None):
-    pg_cli = PostgresClient(db_name, user, passw, db_url)
+def get_data_from_db(db_name, db_conn_id, year, origin=None):
+    pg_cli = PostgresClient(db_name, db_conn_id)
     if origin:
         query = f"""SELECT * 
                     FROM dep_delay 
@@ -24,6 +26,7 @@ def get_data_from_db(db_name, user, passw, db_url, year, origin=None):
 
 def plot_airport(df, origin, year, location):
     fig, ax = plt.subplots(figsize=(18,9))
+    plt.set_loglevel('WARNING')
     ax2 = ax.twinx()
     ax.yaxis.tick_left()
     ax2.yaxis.tick_right()
@@ -39,12 +42,14 @@ def plot_airport(df, origin, year, location):
     ax.legend(custom_lines, ['Normal Delays', 'Unusual Delays'])
     plt.setp( ax.xaxis.get_majorticklabels(), rotation=45)
 
-    fig.savefig(f'{location}{year}-{origin}.jpg', transparent=False, dpi=80, bbox_inches="tight")
-    plt.clf()
+    # change funtion save_img_to_folder to save_img_to_bucket
+    res = save_img_to_folder(fig, location, f'plt/{year}-{origin}.jpg')
+    plt.close()
+    return res
 
-def plot_generator(user, passw, db_url, db_name, location, year):
+def plot_generator(db_conn_id, db_name, location, year):
     """Program entrypoint."""
-    df = get_data_from_db(db_name, user, passw, db_url, year)
+    df = get_data_from_db(db_name, db_conn_id, year)
 
     for airport in df['origin'].unique():
         plot_airport(df[df['origin']== airport], airport, year, location)
@@ -52,13 +57,11 @@ def plot_generator(user, passw, db_url, db_name, location, year):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="DB connection")
-    parser.add_argument("--user", type=str, help="USER")
-    parser.add_argument("--passw", type=str, help="PASSWORD")
-    parser.add_argument("--db_url", type=str, help="DB_URL")
+    parser.add_argument("--db_conn_id", type=str, help="DB_CONN_ID")
     parser.add_argument("--db_name", type=str, help="DB_NAME")
     parser.add_argument("--location", type=str, help="location")
     parser.add_argument("--year", type=str, help="year")
     params = parser.parse_args()
 
-    plot_generator(params.user, params.passw, params.db_urn, params.db_name, 
+    plot_generator(params.db_conn_id, params.db_name, 
         params.location, params.year)

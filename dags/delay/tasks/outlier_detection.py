@@ -6,12 +6,7 @@ import typing
 
 from utils.models import DepDelay
 from utils.db_connections import PostgresClient
-
-
-def get_data_from_bucket(year, location):
-    # change this to point to real S3 bucket
-    data = pd.read_csv(f'{location}{year}.csv')
-    return data
+from utils.functions import read_from_folder, read_from_s3
 
 def process_data(df):
     grouped = df.groupby(['ORIGIN','FL_DATE']).agg({'OP_CARRIER_FL_NUM': 'count', 'DEP_DELAY': 'mean'})
@@ -36,16 +31,16 @@ def keys_in_db(pg_cli, origin, date):
     rbool = (dict(r)['count'] == 1)
     return rbool
 
-def drop_data_from_db(user, passw, db_url, db_name, year):
-    pg_cli = PostgresClient(db_name, user, passw, db_url)
+def drop_data_from_db(db_conn_id, db_name, year):
+    pg_cli = PostgresClient(db_name, db_conn_id) 
     session = pg_cli.get_session()
     rows_deleted = session.query(DepDelay).filter(DepDelay.date.startswith(f'{year}')).delete(synchronize_session='fetch')
     session.commit()
     print(str(rows_deleted) + " rows were deleted")
 
-def insert_to_db(data, user, passw, db_url, db_name):
+def insert_to_db(data, db_conn_id, db_name):
     """Inserts data into db if not exists. """
-    pg_cli = PostgresClient(db_name, user, passw, db_url)
+    pg_cli = PostgresClient(db_name, db_conn_id) 
     session = pg_cli.get_session()
     existing = []
     if isinstance(data,DepDelay) :
@@ -73,10 +68,11 @@ class SklearnWrapper:
         transformed = self.transformation.fit_transform(df.values)
         return pd.DataFrame(transformed, columns=df.columns, index=df.index)
 
-def get_data_to_db(user, passw, db_url, db_name, location, year):
+def get_data_to_db(db_conn_id, db_name, location, year):
     """Program entrypoint."""
     year = int(year)
-    data = get_data_from_bucket(year, location)
+    # change function read_from_folder to read_from_s3
+    data = pd.read_csv(read_from_folder(location, f'samples/{year}.csv'))
 
     processed_df = process_data(data)
 
@@ -88,19 +84,17 @@ def get_data_to_db(user, passw, db_url, db_name, location, year):
         model_data = []
 
     # To emulate insert overwrite partition by year, first delete all previous info
-    drop_data_from_db(user, passw, db_url, db_name, year)
-    insert_to_db(model_data, user, passw, db_url, db_name)
+    drop_data_from_db(db_conn_id, db_name, year)
+    insert_to_db(model_data, db_conn_id, db_name)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="DB connection")
-    parser.add_argument("--user", type=str, help="USER")
-    parser.add_argument("--passw", type=str, help="PASSWORD")
-    parser.add_argument("--db_url", type=str, help="DB_URL")
+    parser.add_argument("--db_conn_id", type=str, help="DB_CONN_ID")
     parser.add_argument("--db_name", type=str, help="DB_NAME")
     parser.add_argument("--location", type=str, help="location")
     parser.add_argument("--year", type=str, help="year")
 
     params = parser.parse_args()
-    get_data_to_db(params.user, params.passw, params.db_url, params.db_name, 
+    get_data_to_db(params.db_conn_id, params.db_name, 
         params.location, params.year)
