@@ -1,0 +1,4 @@
+
+variable "RDSpassword" {
+    type = string
+}

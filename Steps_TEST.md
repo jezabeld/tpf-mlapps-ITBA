@@ -42,10 +42,33 @@ How to set Fernet Key: [secure-connections](https://airflow.apache.org/docs/apac
 
 How to connect MWAA to Secret Manager: [connections-secrets-manager](https://docs.aws.amazon.com/mwaa/latest/userguide/connections-secrets-manager.html).
 How to use variables in Secret Manager: [Airflow connections](https://docs.aws.amazon.com/mwaa/latest/userguide/samples-secrets-manager.html).
+```python
+# Use this code snippet in your app.
+# If you need more information about configurations or implementing the sample code, visit the AWS docs:   
+# https://aws.amazon.com/developers/getting-started/python/
 
+import boto3
+import base64
+from botocore.exceptions import ClientError
+
+def get_secret():
+
+    secret_name = "mwaa-environment/connections/RDSpostgres"
+    region_name = "us-east-1"
+
+    # Create a Secrets Manager client
+    session = boto3.session.Session()
+    client = session.client(
+        service_name='secretsmanager',
+        region_name=region_name
+    )
+
+    # In this sample we only handle the specific exceptions for the 'GetSecretValue' API.
+    # See https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_GetSecretValue.html
+```
 
 ## 3) Architecture sketch.
 First architecture diagram in [DrawIO](https://app.diagrams.net/?mode=github#Hjezabeld%2Ftpf-mlapps-ITBA%2Ftest%2FArchitecture.png).
 
 
-Terraform template: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/mwaa_environment
+Terraform template: [MWAA Environment](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/mwaa_environment). Complete template: [terraform-aws-mwaa](https://github.com/idealo/terraform-aws-mwaa).
