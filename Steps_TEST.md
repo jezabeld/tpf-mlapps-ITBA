@@ -72,3 +72,5 @@ First architecture diagram in [DrawIO](https://app.diagrams.net/?mode=github#Hje
 
 
 Terraform template: [MWAA Environment](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/mwaa_environment). Complete template: [terraform-aws-mwaa](https://github.com/idealo/terraform-aws-mwaa).
+
+## 4) Terraform testing.
