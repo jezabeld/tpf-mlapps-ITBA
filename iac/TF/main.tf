@@ -2,13 +2,13 @@ terraform {
 	required_providers {
 		aws = {
 			source  = "hashicorp/aws"
-			version = "3.7"
+			version = "3.74"
 		}
 	}
 }
 
 provider "aws" {
-	profile = "itba"
+	profile = "default"
 	region = "us-east-1"
 }
 
@@ -21,10 +21,7 @@ resource "aws_vpc" "mwaavpc" {
     enable_dns_hostnames             = false
     enable_dns_support               = true
     instance_tenancy                 = "default"
-    tags                             = {
-        "Name"    = "mwaa-vpc"
-        "Project" = "itba"
-    }
+    tags                             = merge({Name = "mwaa-vpc"}, var.tags)
 }
 
 # aws_subnet.prisub1:
@@ -33,13 +30,9 @@ resource "aws_subnet" "prisub1" {
     availability_zone               = "us-east-1e"
     cidr_block                      = "10.192.20.0/24"
     map_public_ip_on_launch         = false
-    tags                            = {
-        "Name"    = "mwaa-prisub1"
-        "Project" = "ITBA"
-    }
-    vpc_id                          = aws_vpc.mwaavpc.id
+    tags                             = merge({Name = "mwaa-prisub1"}, var.tags)
 
-    timeouts {}
+    vpc_id                          = aws_vpc.mwaavpc.id
 }
 
 # aws_subnet.prisub2:
@@ -48,13 +41,9 @@ resource "aws_subnet" "prisub2" {
     availability_zone               = "us-east-1f"
     cidr_block                      = "10.192.21.0/24"
     map_public_ip_on_launch         = false
-    tags                            = {
-        "Name"    = "mwaa-prisub2"
-        "Project" = "ITBA"
-    }
-    vpc_id                          = aws_vpc.mwaavpc.id
+    tags                             = merge({Name = "mwaa-prisub2"}, var.tags)
 
-    timeouts {}
+    vpc_id                          = aws_vpc.mwaavpc.id
 }
 
 # aws_subnet.pubsub1:
@@ -62,14 +51,11 @@ resource "aws_subnet" "pubsub1" {
     assign_ipv6_address_on_creation = false
     availability_zone               = "us-east-1e"
     cidr_block                      = "10.192.10.0/24"
-    map_public_ip_on_launch         = false
-    tags                            = {
-        "Name"    = "mwaa-pubsub1"
-        "Project" = "ITBA"
-    }
+    map_public_ip_on_launch         = true
+    tags                             = merge({Name = "mwaa-pubsub1"}, var.tags)
+
     vpc_id                          = aws_vpc.mwaavpc.id
 
-    timeouts {}
 }
 
 # aws_subnet.pubsub2:
@@ -77,61 +63,47 @@ resource "aws_subnet" "pubsub2" {
     assign_ipv6_address_on_creation = false
     availability_zone               = "us-east-1f"
     cidr_block                      = "10.192.11.0/24"
-    map_public_ip_on_launch         = false
-    tags                            = {
-        "Name"    = "mwaa-pubsub2"
-        "Project" = "ITBA"
-    }
-    vpc_id                          = aws_vpc.mwaavpc.id
+    map_public_ip_on_launch         = true
+    tags                             = merge({Name = "mwaa-pubsub2"}, var.tags)
 
-    timeouts {}
+    vpc_id                          = aws_vpc.mwaavpc.id
 }
 
 # aws_internet_gateway.mwaaig:
 resource "aws_internet_gateway" "mwaaig" {
-    tags     = {
-        "Name"    = "mwaa-ig"
-        "Project" = "ITBA"
-    }
+    tags                             = merge({Name = "mwaa-ig"}, var.tags)
+
     vpc_id   = aws_vpc.mwaavpc.id
 }
 
 # aws_eip.eip1:
 resource "aws_eip" "eip1" {
     public_ipv4_pool  = "amazon"
-    tags              = {}
+    tags              = var.tags
     vpc               = true
-
-    timeouts {}
 }
 
 # aws_eip.eip2:
 resource "aws_eip" "eip2" {
     public_ipv4_pool  = "amazon"
-    tags              = {}
+    tags              = var.tags
     vpc               = true
-
-    timeouts {}
 }
 
 # aws_nat_gateway.mwaang1:
 resource "aws_nat_gateway" "mwaang1" {
     allocation_id        = aws_eip.eip1.id
     subnet_id            = aws_subnet.pubsub1.id
-    tags                 = {
-        "Name"    = "mwaa-ng1"
-        "Project" = "ITBA"
-    }
+    tags                 = merge({Name = "mwaa-ng1"}, var.tags)
+
 }
 
 # aws_nat_gateway.mwaang2:
 resource "aws_nat_gateway" "mwaang2" {
     allocation_id        = aws_eip.eip2.id
     subnet_id            = aws_subnet.pubsub2.id
-    tags                 = {
-        "Name"    = "mwaa-ng2"
-        "Project" = "ITBA"
-    }
+    tags                 = merge({Name = "mwaa-ng2"}, var.tags)
+
 }
 
 # aws_route_table.priroute1:
@@ -149,12 +121,13 @@ resource "aws_route_table" "priroute1" {
 			network_interface_id      = ""
             transit_gateway_id        = ""
             vpc_peering_connection_id = ""
+            carrier_gateway_id        = ""
+            destination_prefix_list_id = ""
+            vpc_endpoint_id           = ""
         },
     ]
-    tags             = {
-        "Name"    = "mwaa-priroute1"
-        "Project" = "ITBA"
-    }
+    tags             = merge({Name = "mwaa-priroute1"}, var.tags)
+
     vpc_id           = aws_vpc.mwaavpc.id
 }
 
@@ -173,12 +146,13 @@ resource "aws_route_table" "priroute2" {
 			network_interface_id      = ""
             transit_gateway_id        = ""
             vpc_peering_connection_id = ""
+            carrier_gateway_id        = ""
+            destination_prefix_list_id = ""
+            vpc_endpoint_id           = ""
         },
     ]
-    tags             = {
-        "Name"    = "mwaa-priroute2"
-        "Project" = "ITBA"
-    }
+    tags             = merge({Name = "mwaa-priroute2"}, var.tags)
+
     vpc_id           = aws_vpc.mwaavpc.id
 }
 
@@ -197,12 +171,14 @@ resource "aws_route_table" "pubroute" {
             network_interface_id      = ""
             transit_gateway_id        = ""
             vpc_peering_connection_id = ""
+            carrier_gateway_id        = ""
+            destination_prefix_list_id = ""
+            vpc_endpoint_id           = ""
+
         },
     ]
-    tags             = {
-        "Name"    = "mwaa-pubroute"
-        "Project" = "ITBA"
-    }
+    tags             = merge({Name = "mwaa-pubroute"}, var.tags)
+
     vpc_id           = aws_vpc.mwaavpc.id
 }
 
@@ -248,31 +224,29 @@ resource "aws_security_group" "mwaasg" {
             ]
             description      = ""
             from_port        = 0
+            protocol         = "-1"
+            to_port          = 0
             ipv6_cidr_blocks = []
             prefix_list_ids  = []
-            protocol         = "-1"
             security_groups  = []
             self             = false
-            to_port          = 0
         },
     ]
     ingress     = [
         {
-            cidr_blocks      = []
             description      = ""
             from_port        = 0
-            ipv6_cidr_blocks = []
-            prefix_list_ids  = []
             protocol         = "-1"
-            security_groups  = []
             self             = true
             to_port          = 0
+            cidr_blocks      = []
+            ipv6_cidr_blocks = []
+            prefix_list_ids  = []
+            security_groups  = []
         },
     ]
     name        = "mwaa-sg"
-    tags        = {
-        "Project" = "ITBA"
-    }
+    tags        = var.tags
     vpc_id      = aws_vpc.mwaavpc.id
 
     timeouts {}
@@ -286,9 +260,7 @@ resource "aws_db_subnet_group" "dbsubnetgroup" {
 		aws_subnet.prisub1.id,
 		aws_subnet.prisub2.id
     ]
-    tags = {
-		"Project" = "ITBA"
-	}
+    tags = var.tags
 }
 
 # aws_db_instance.rdspostgres:
@@ -302,7 +274,7 @@ resource "aws_db_instance" "rdspostgres" {
     deletion_protection                   = false
     enabled_cloudwatch_logs_exports       = []
     engine                                = "postgres"
-    engine_version                        = "13.1"
+    engine_version                        = "11.1"
     iam_database_authentication_enabled   = false
     identifier                            = "mwaa-postgres"
     instance_class                        = "db.t3.micro"
@@ -313,8 +285,8 @@ resource "aws_db_instance" "rdspostgres" {
     monitoring_interval                   = 0
     multi_az                              = false
     name                                  = "postgres"
-    option_group_name                     = "default:postgres-13"
-    parameter_group_name                  = "default.postgres13"
+    option_group_name                     = "default:postgres-11"
+    parameter_group_name                  = "default.postgres11"
     performance_insights_enabled          = true
     performance_insights_retention_period = 7
     port                                  = 5432
@@ -324,9 +296,7 @@ resource "aws_db_instance" "rdspostgres" {
     storage_type                          = "gp2"
     username                              = "postgres"
 	password             				  = var.RDSpassword
-    tags = {
-		"Project" = "ITBA"
-	}
+    tags = var.tags
 
     vpc_security_group_ids                = [
         aws_security_group.mwaasg.id,
@@ -335,9 +305,259 @@ resource "aws_db_instance" "rdspostgres" {
     timeouts {}
 }
 
+# aws_secretsmanager_secret.conn_db:
+resource "aws_secretsmanager_secret" "conn_db" {
+    description      = "Acces to my RDS Postgres database."
+    name             = "mwaa/connections/RDSpostgres"
+    recovery_window_in_days = 0
+    tags             = var.tags
+}
+
+resource "aws_secretsmanager_secret_version" "conn_db_val" {
+  secret_id = aws_secretsmanager_secret.conn_db.id
+  secret_string = "postgres://${aws_db_instance.rdspostgres.username}:${var.RDSpassword}@${aws_db_instance.rdspostgres.endpoint}/${var.db_schema_name}"
+}
+
+# aws_secretsmanager_secret.var_conn_id:
+resource "aws_secretsmanager_secret" "var_conn_id" {
+    description      = "Connection ID for DB."
+    name             = "mwaa/variables/conn_id"
+    recovery_window_in_days = 0
+    tags             = var.tags
+}
+resource "aws_secretsmanager_secret_version" "var_conn_id_val" {
+  secret_id = aws_secretsmanager_secret.var_conn_id.id
+  secret_string = var.conn_var
+}
+
+# aws_secretsmanager_secret.var_db_name:
+resource "aws_secretsmanager_secret" "var_db_name" {
+    description      = "Database Name/Schema."
+    name             = "mwaa/variables/db_name"
+    recovery_window_in_days = 0
+    tags             = var.tags
+}
+resource "aws_secretsmanager_secret_version" "var_db_name_val" {
+  secret_id = aws_secretsmanager_secret.var_db_name.id
+  secret_string = var.db_schema_name
+}
+
+# aws_iam_role.mwaarole:
+resource "aws_iam_role" "mwaarole" {
+    assume_role_policy    = data.aws_iam_policy_document.assume.json
+    
+    force_detach_policies = false
+#    max_session_duration  = 3600
+    name                  = "${var.env_name}-Role"
+    path                  = "/service-role/"
+    tags                  = var.tags
+}
+
+
+resource "aws_iam_role_policy" "mwaapolicy" {
+    name = "mymwaapolicy"
+    policy = data.aws_iam_policy_document.this.json
+    role = aws_iam_role.mwaarole.id
+}
+
+data "aws_iam_policy_document" "assume" {
+    version = "2012-10-17"
+    statement {
+            actions    = ["sts:AssumeRole"]
+            effect    = "Allow"
+            principals {
+                identifiers = [
+                    "airflow.amazonaws.com",
+                    "airflow-env.amazonaws.com",
+                ]
+                type = "Service"
+            }
+        }
+
+}
+
+data "aws_iam_policy_document" "base" {
+  version = "2012-10-17"
+  statement {
+    effect = "Allow"
+    actions = [
+      "airflow:PublishMetrics"
+    ]
+    resources = [
+      "arn:aws:airflow:us-east-1:*:environment/${var.env_name}"
+    ]
+  }
+  statement {
+    effect = "Allow"
+    actions = [
+      "s3:GetObject*",
+      "s3:GetBucket*",
+      "s3:List*"
+    ]
+    resources = [
+      "arn:aws:s3:::${var.bucket_name}",
+      "arn:aws:s3:::${var.bucket_name}/*"
+    ]
+  }
+  statement {
+    effect = "Allow"
+    actions = [
+      "logs:CreateLogStream",
+      "logs:CreateLogGroup",
+      "logs:PutLogEvents",
+      "logs:GetLogEvents",
+      "logs:GetLogRecord",
+      "logs:GetLogGroupFields",
+      "logs:GetQueryResults"
+    ]
+    resources = [
+      "arn:aws:logs:us-east-1:*:log-group:airflow-*"
+    ]
+  }
+  statement {
+    effect = "Allow"
+    actions = [
+      "logs:DescribeLogGroups"
+    ]
+    resources = [
+      "*"
+    ]
+  }
+  statement {
+
+    effect = "Allow"
+    actions = [
+      "cloudwatch:PutMetricData"
+    ]
+    resources = [
+      "*"
+    ]
+  }
+  statement {
+    effect = "Allow"
+    actions = [
+      "sqs:ChangeMessageVisibility",
+      "sqs:DeleteMessage",
+      "sqs:GetQueueAttributes",
+      "sqs:GetQueueUrl",
+      "sqs:ReceiveMessage",
+      "sqs:SendMessage"
+    ]
+    resources = [
+      "arn:aws:sqs:us-east-1:*:airflow-celery-*"
+    ]
+  }
+  statement {
+    effect = "Allow"
+    actions = [
+      "kms:Decrypt",
+      "kms:DescribeKey",
+      "kms:GenerateDataKey*",
+      "kms:Encrypt"
+    ]
+    not_resources = [
+      "arn:aws:kms:*:${var.account_id}:key/*"
+    ]
+    condition {
+      test = "StringLike"
+      values = [
+        "sqs.us-east-1.amazonaws.com"]
+      variable = "kms:ViaService"
+    }
+  }
+}
+data "aws_iam_policy_document" "aditional" {
+    statement {
+      effect = "Allow"
+      actions = [
+            "secretsmanager:GetResourcePolicy",
+            "secretsmanager:GetSecretValue",
+            "secretsmanager:DescribeSecret",
+            "secretsmanager:ListSecretVersionIds"
+      ]
+      resources = [ "arn:aws:secretsmanager:us-east-1:*:secret:*"]
+    }
+    statement {
+      effect = "Allow"
+      actions = [
+          "secretsmanager:ListSecrets"
+      ]
+      resources = [ "*" ]
+    }
+}
+data "aws_iam_policy_document" "this" {
+  source_policy_documents = [
+    data.aws_iam_policy_document.base.json ,
+    data.aws_iam_policy_document.aditional.json
+  ]
+}
+
+# aws_mwaa_environment.mwaaEnv:
+resource "aws_mwaa_environment" "mwaaEnv" {
+    airflow_configuration_options   = var.airflow_config
+    airflow_version                 = "2.2.2"
+    dag_s3_path                     = var.dag_s3_path
+    environment_class               = "mw1.small"
+    execution_role_arn              = aws_iam_role.mwaarole.arn
+    max_workers                     = 2
+    min_workers                     = 1
+    name                            = var.env_name
+    requirements_s3_object_version  = ""
+    requirements_s3_path            = var.requirements_s3_path
+    source_bucket_arn               = "arn:aws:s3:::${var.bucket_name}"
+    tags                            = var.tags
+    tags_all                        = var.tags
+    webserver_access_mode           = "PUBLIC_ONLY"
+    weekly_maintenance_window_start = "THU:16:00"
+
+    logging_configuration {
+        dag_processing_logs {
+            enabled   = true
+            log_level = "WARNING"
+        }
+
+        scheduler_logs {
+            enabled   = true
+            log_level = "WARNING"
+        }
+
+        task_logs {
+            enabled                   = true
+            log_level                 = "INFO"
+        }
+
+        webserver_logs {
+            enabled   = true
+            log_level = "WARNING"
+        }
+
+        worker_logs {
+            enabled   = true
+            log_level = "WARNING"
+        }
+    }
+
+    network_configuration {
+        security_group_ids = [
+            aws_security_group.mwaasg.id,
+        ]
+        subnet_ids         = [
+            aws_subnet.prisub1.id,
+            aws_subnet.prisub2.id,
+        ]
+    }
+
+    depends_on = [
+      aws_iam_role.mwaarole,
+      aws_security_group.mwaasg,
+      aws_subnet.prisub1,
+      aws_subnet.prisub2,
+    ]
+}
+
 
 /*resource "aws_s3_bucket" "mwaabucket" {
-	bucket = "my-tf-test-bucket-itba"
+	bucket = var.bucket_name
 
 	# required: https://docs.aws.amazon.com/mwaa/latest/userguide/mwaa-s3-bucket.html
 	versioning {

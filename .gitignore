@@ -145,3 +145,9 @@ dags/**/*.pyc
 /logs
 /db-data
 __pycache__/
+.DS_Store
+
+# from terraform
+*.tfstate*
+.terraform*
+terraform.tfvars
