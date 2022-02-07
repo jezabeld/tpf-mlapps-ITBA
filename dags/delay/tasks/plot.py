@@ -24,7 +24,7 @@ def get_data_from_db(db_name, db_conn_id, year, origin=None):
     df = pg_cli.to_frame(query).squeeze()
     return df
 
-def plot_airport(df, origin, year, location):
+def plot_airport(df, origin, year, location, bucket_name):
     fig, ax = plt.subplots(figsize=(18,9))
     plt.set_loglevel('WARNING')
     ax2 = ax.twinx()
@@ -43,16 +43,16 @@ def plot_airport(df, origin, year, location):
     plt.setp( ax.xaxis.get_majorticklabels(), rotation=45)
 
     # change funtion save_img_to_folder to save_img_to_bucket
-    res = save_img_to_folder(fig, location, f'plt/{year}-{origin}.jpg')
+    res = save_img_to_bucket(fig, bucket_name, f'{location}/{year}-{origin}.png')
     plt.close()
     return res
 
-def plot_generator(db_conn_id, db_name, location, year):
+def plot_generator(db_conn_id, db_name, location, year, bucket_name):
     """Program entrypoint."""
     df = get_data_from_db(db_name, db_conn_id, year)
 
     for airport in df['origin'].unique():
-        plot_airport(df[df['origin']== airport], airport, year, location)
+        plot_airport(df[df['origin']== airport], airport, year, location, bucket_name)
     plt.close('all')
 
 if __name__ == "__main__":
@@ -61,7 +61,8 @@ if __name__ == "__main__":
     parser.add_argument("--db_name", type=str, help="DB_NAME")
     parser.add_argument("--location", type=str, help="location")
     parser.add_argument("--year", type=str, help="year")
+    parser.add_argument("--bucket_name", type=str, help="bucket_name")
     params = parser.parse_args()
 
     plot_generator(params.db_conn_id, params.db_name, 
-        params.location, params.year)
+        params.location, params.year, params.bucket_name)

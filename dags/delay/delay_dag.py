@@ -12,10 +12,11 @@ from delay.tasks.plot import plot_generator
 from utils.functions import read_dbconn_from_env, read_dbconn_from_var
 
 # Env vars and definitions
-db_data = read_dbconn_from_env()
+db_data = read_dbconn_from_var() #read_dbconn_from_env()
 
-RAW_DATA = os.getenv('DATA_LOCATION')
-PLOT_DIR = os.getenv('PLOT_DIR')
+BUCKET = Variable.get('bucket_name')
+RAW_DATA = Variable.get('raw_data_dir') #os.getenv('DATA_LOCATION')
+PLOT_DIR = Variable.get('plot_dir') #os.getenv('PLOT_DIR')
 
 
 # Dag definition
@@ -39,6 +40,7 @@ with DAG(
             **db_data,
             'location': RAW_DATA,
             'year': '{{ macros.ds_format(ds , "%Y-%m-%d", "%Y")}}',
+            'bucket_name': BUCKET,
         }
     )
     plot_gen = PythonOperator(
@@ -46,8 +48,9 @@ with DAG(
         python_callable=plot_generator,
         op_kwargs= {
             **db_data,
-            'location': RAW_DATA,
+            'location': PLOT_DIR,
             'year': '{{ macros.ds_format(ds , "%Y-%m-%d", "%Y")}}',
+            'bucket_name': BUCKET,
         }
     )
     # Dag workflow

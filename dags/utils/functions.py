@@ -13,8 +13,8 @@ def read_dbconn_from_var(**kwargs):
     # client = hook.get_client_type('secretsmanager')
     # response = client.get_secret_value(SecretId=sm_secretId_name) #reeplace with real secret
     db_data = {
-        'db_conn_id': Variable.get('DB_CONN_ID'), 
-        'db_name': Variable.get('DATABASE_NAME'),
+        'db_conn_id': Variable.get('conn_id'), 
+        'db_name': Variable.get('db_name'),
     }
 
     return db_data
@@ -31,7 +31,7 @@ def read_from_s3(S3_BUCKET = 'my-export-bucket', S3_KEY = 'folder/file.ext' ):
     s3_hook = S3Hook()
     s3_client = s3_hook.get_conn()
     myfile = s3_client.get_object(Bucket=S3_BUCKET, Key=S3_KEY)
-    status = response.get("ResponseMetadata", {}).get("HTTPStatusCode")
+    status = myfile.get("ResponseMetadata", {}).get("HTTPStatusCode")
     if status == 200:
         print(f"Successful S3 get_object response. Status {status}")
         return myfile.get("Body")

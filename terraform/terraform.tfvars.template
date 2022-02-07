@@ -1,0 +1,25 @@
+# Mandatory variables
+
+bucket_name = ""
+account_id = ""
+
+# Optional to modify
+tags = {}
+
+env_name = "MyMWAAEnvironment"
+RDSpassword = "postgres"
+conn_var = "RDSpostgres"
+db_schema_name = "postgres"
+
+requirements_s3_path = "config/requirements.txt"
+airflow_config = {"core.dags_are_paused_at_creation" = "False",
+                    "secrets.backend" = "airflow.providers.amazon.aws.secrets.secrets_manager.SecretsManagerBackend",
+                    "secrets.backend_kwargs" = 	"{\"connections_prefix\" : \"mwaa/connections/\", \"variables_prefix\" : \"mwaa/variables/\"}"
+}
+
+# Optional to overwrite default values
+# region = "us-east-1"
+# vpc_cidr = "10.192.0.0/16"
+# subnet_cidrs = ["10.192.10.0/24", "10.192.11.0/24", "10.192.20.0/24", "10.192.21.0/24"]
+# data_dir = "data"
+# plot_dir = "plot"

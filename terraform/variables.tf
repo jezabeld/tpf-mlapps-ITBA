@@ -39,3 +39,27 @@ variable "conn_var" {
 variable "db_schema_name" {
   type = string
 }
+
+variable "region" {
+  type = string
+  default = "us-east-1"
+}
+variable "vpc_cidr" {
+  type = string
+  default = "10.192.0.0/16"
+}
+
+variable "subnet_cidrs" {
+  type = list(string)
+  default = ["10.192.10.0/24", "10.192.11.0/24", "10.192.20.0/24", "10.192.21.0/24" ]
+}
+
+variable "data_dir" {
+  type = string
+  default = "data"
+}
+
+variable "plot_dir" {
+  type = string
+  default = "plot"
+}

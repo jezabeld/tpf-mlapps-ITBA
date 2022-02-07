@@ -68,11 +68,11 @@ class SklearnWrapper:
         transformed = self.transformation.fit_transform(df.values)
         return pd.DataFrame(transformed, columns=df.columns, index=df.index)
 
-def get_data_to_db(db_conn_id, db_name, location, year):
+def get_data_to_db(db_conn_id, db_name, location, year, bucket_name):
     """Program entrypoint."""
     year = int(year)
     # change function read_from_folder to read_from_s3
-    data = pd.read_csv(read_from_folder(location, f'samples/{year}.csv'))
+    data = pd.read_csv(read_from_s3(bucket_name, f'{location}/{year}.csv'))
 
     processed_df = process_data(data)
 
@@ -94,7 +94,8 @@ if __name__ == "__main__":
     parser.add_argument("--db_name", type=str, help="DB_NAME")
     parser.add_argument("--location", type=str, help="location")
     parser.add_argument("--year", type=str, help="year")
+    parser.add_argument("--bucket_name", type=str, help="bucket_name")
 
     params = parser.parse_args()
     get_data_to_db(params.db_conn_id, params.db_name, 
-        params.location, params.year)
+        params.location, params.year, params.bucket_name)
