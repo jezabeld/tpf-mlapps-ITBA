@@ -50,12 +50,14 @@ resource "aws_mwaa_environment" "mwaaEnv" {
         subnet_ids         = var.pri_subnet_ids
     }
 
-/*    depends_on = [
-      aws_iam_role.mwaarole,
-      aws_security_group.mwaasg,
-      aws_subnet.prisub1,
-      aws_subnet.prisub2,
-    ]*/
+    provisioner "local-exec" {
+        when    = destroy
+        command = <<EOF
+aws logs describe-log-groups --query 'logGroups[*].logGroupName' --output table | \
+awk '{print $2}' | grep ^airflow-mwaaITBAenv | while read x; do  echo "deleting $x"; aws logs delete-log-group --log-group-name $x; done
+EOF
+    }
+
 }
 
 # aws_secretsmanager_secret.var_conn_id:

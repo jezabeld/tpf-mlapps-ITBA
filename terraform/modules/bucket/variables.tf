@@ -1,13 +1,11 @@
-variable "create_bucket" {
-  description = "true if bucket should be created."
-  type = bool
-  default = true
-}
-
-variable "bucket_name" {
-    type = string
-}
-
 variable "v_tags" {
   type = map(string)
+}
+variable "profile" {
+  type = string
+}
+variable "dag_s3_path" {
+  description = "Relative path of the dags folder within the source bucket"
+  type = string
+  default = "dags"
 }

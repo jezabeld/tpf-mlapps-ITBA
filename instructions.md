@@ -1,55 +1,37 @@
 
-2. Instalar el cliente de aws siguiendo [estas instrucciones](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) acorde a su sistema
-operativo.
-
-Crear el bucket por consola
-aws s3api create-bucket --bucket mwaa-itba-bucket --no-object-lock-enabled-for-bucket --region us-east-1 
-aws s3api put-bucket-versioning --bucket mwaa-itba-bucket --versioning-configuration Status=Enabled
-aws s3api put-public-access-block --bucket mwaa-itba-bucket --public-access-block-configuration "BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true"
-
-
-
-obtener los datos siguiendo estos pasos:
-1. Instalar el cliente de Kaggle: `pip install kaggle`
+1. Instalar el cliente de aws siguiendo [estas instrucciones](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) acorde a su sistema
+operativo y configurar las credenciales de la cuenta siguiendo estos pasos: [AWS CLI Configuration basics](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html).
+2. Instalar el cliente de Kaggle: `pip install kaggle`
 3. Configurar las credenciales siguiendo [estas instrucciones](https://github.com/Kaggle/kaggle-api#api-credentials).
-4. Bajar datos de Kaggle:
+4. Instalar el cliente de terraform siguiendo estas instrucciones: [Install Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli)
 
-```bash
-# cd to your local directory
-cd ./dags
-mkdir data && cd data
-# Download zipped dataset from kaggle
-kaggle datasets download -d yuanyuwendymu/airline-delay-and-cancellation-data-2009-2018
-# Unzip files
-unzip airline-delay-and-cancellation-data-2009-2018.zip -d raw/
-# Upload files to bucket
-aws s3 sync raw/ s3://mwaa-bucket-itba/data/
-# Remove zipped data to save space [optional]
-rm airline-delay-and-cancellation-data-2009-2018.zip
-```
+--> cuenta de quicksight en AWS con permiso de lectura a RDS
 
-Upload config files to bucket:
-```bash
-cd ./dags
-aws s3 sync config/ s3://mwaa-bucket-itba/config/ --profile itba
-```
+5. Configurar variables para crear la arquitectura:
+    Utilizando como template el archivo [terraform.tf.vars.template](./terraform/terraform.tf.vars.template) ubicado en el directorio de terraform, 
+    completar con la variables obligatoria para poder correr la arquitectura: account_id. En caso de que se desee, se pueden modificar algunas de las
+    siguientes variables:
+    - tags: en formato map ("clave": "valor" estilo JSON), las tags que se deberán utilizar en los recursos a crear.
+    - env_name: nombre para el entorno de MWAA (Managed Workflows for Apache Airflow)
+    - RDSpassword: password para la base de datos donde se almacenará la información.
+    - db_schema_name: nombre del schema o database en postgres para almacenar la información.
+    
+6. Incializar terraform:
+    Para construir la arquitectura, es necesario abrir una consola en la carpeta [terraform](./terraform) e inicializar terraform: `terraform init`,
+    de esta forma se instalarán los modulos del provider AWS y se reconoceran los modulos creados localmente.
 
-Instalar terraform
+7. Aprovisionar la arquitectura:
+    Para comenzar el aprovisionamiento se debe correr el comando `terraform apply` dentro de la carpeta [terraform](./terraform), el cual realizará 
+    un chequeo del código de implementación de la arquitectura enunciando cuántos recursos se crearán, y luego solicitará confirmación para comenzar 
+    a aplicar los cambios.
 
+    Este proyecto comenzará a generar los recursos en la cuenta indicada con las credenciales del perfil utilizado (las que se encuentran configuradas 
+    en ~/.aws/credentials). Luego de crear un bucket en s3 comenzará a cargar la data de Kaggle descargándola primero en la máquina local (se generará 
+    una carpeta `data` en el directorio principal del proyecto automáticamente). Mientras se carga dicha data también se irán creando los recursos 
+    necesarios para el resto del proyecto en la cuenta de AWS (VPC, subnets, instancia de base de datos, environment de Airflow, etc...).
 
+    Nota: este paso lleva bastante tiempo ya que el upload de la data al bucket puede tardar aprox una hora (dependiendo de la conexión a internet disponible)
+    y el aprovisionamiento del entorno de Airflow también puede demorar hasta 40 minutos.
 
-Configuration option
-Custom value
-core.dags_are_paused_at_creation	False
-secrets.backend	airflow.contrib.secrets.aws_secrets_manager.SecretsManagerBackend
-secrets.backend_kwargs	'{"connections_prefix" : "mwaa/connections", "variables_prefix" : "mwaa/variables"}'
-
-
-
-# Connection in Secret manager
-mwaa/connections/RDSpostgres
-
-
-# Variables en secret manager
-mwaa/variables/conn_id
-mwaa/variables/db_name
+8. Acceder a los servicios:
+    

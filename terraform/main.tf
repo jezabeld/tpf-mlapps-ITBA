@@ -8,8 +8,15 @@ terraform {
 }
 
 provider "aws" {
-	profile = "default"
+	profile = var.profile #"default"
 	region  = var.region
+}
+
+module "bucket" {
+  source = "./modules/bucket"
+  v_tags        = var.tags
+  profile       = var.profile
+  dag_s3_path   = var.dag_s3_path
 }
 
 module "network" {
@@ -37,7 +44,7 @@ module "iam" {
 
   v_tags      = var.tags
   env_name    = var.env_name
-  bucket_name = var.bucket_name
+  bucket_name = module.bucket.bucket_name #var.bucket_name
   account_id  = var.account_id
 }
 
@@ -46,7 +53,7 @@ module "airflow" {
 
   v_tags                = var.tags
   env_name              = var.env_name
-  bucket_name           = var.bucket_name
+  bucket_name           = module.bucket.bucket_name #var.bucket_name
   requirements_s3_path  = var.requirements_s3_path
   conn_var              = var.conn_var
   db_schema_name        = var.db_schema_name
@@ -58,4 +65,16 @@ module "airflow" {
   role_arn              = module.iam.role_arn
   securitygroup_id      = module.network.securitygroup_id
   pri_subnet_ids        = module.network.pri_subnet_ids
+}
+
+
+module "superset" {
+  source          = "./modules/superset"
+  v_tags          = var.tags
+  region          = var.region
+  vpc_id          = module.network.vpc_id
+  subnet_ids      = module.network.ecs_subnet_ids
+  pub_subnet_ids  = module.network.pub_subnet_ids
+  securitygroup_id= module.network.securitygroup_id
+  security_groups = module.network.supersetsg_id
 }

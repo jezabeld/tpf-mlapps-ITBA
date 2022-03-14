@@ -133,6 +133,7 @@ notas.md
 *.csv
 kaggle.json
 *.delete
+/dags/examples
 logs/*
 *.jpg
 aws
@@ -151,3 +152,4 @@ __pycache__/
 *.tfstate*
 .terraform*
 terraform.tfvars
+*.dot

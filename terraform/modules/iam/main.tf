@@ -157,3 +157,33 @@ data "aws_iam_policy_document" "this" {
     data.aws_iam_policy_document.aditional.json
   ]
 }
+
+data "aws_iam_role" "ecs_task_execution_role" {
+  name = "ecsTaskExecutionRole"
+}
+
+resource "aws_iam_role_policy" "createLogsPolicy" {
+ name = "createLogsPolicy"
+ role = "${data.aws_iam_role.ecs_task_execution_role.id}"
+
+ # This policy is exclusively available by this role.
+ policy = <<-EOF
+ {
+   "Version": "2012-10-17",
+   "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents",
+                "logs:DescribeLogStreams"
+            ],
+            "Resource": [
+                "arn:aws:logs:*:*:*"
+            ]
+        }
+    ]
+ }
+EOF
+}

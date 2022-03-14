@@ -24,7 +24,7 @@ with DAG(
     "delay_dag",
     schedule_interval='0 6 3 1 *',
     start_date=datetime(2009, 1, 1),
-    end_date=datetime(2010, 1, 1),
+    end_date=datetime(2019, 1, 1),
     max_active_runs=1,
     catchup=True,
 ) as dag:

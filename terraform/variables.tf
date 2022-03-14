@@ -34,6 +34,7 @@ variable "airflow_config" {
 
 variable "conn_var" {
   type = string
+  default = "RDSpostgres"
 }
 
 variable "db_schema_name" {
@@ -62,4 +63,9 @@ variable "data_dir" {
 variable "plot_dir" {
   type = string
   default = "plot"
+}
+
+variable "profile" {
+  type = string
+  default = "default"
 }
