@@ -71,8 +71,8 @@ class SklearnWrapper:
 def get_data_to_db(db_conn_id, db_name, location, year, bucket_name):
     """Program entrypoint."""
     year = int(year)
-    # change function read_from_folder to read_from_s3
-    data = pd.read_csv(read_from_s3(bucket_name, f'{location}/{year}.csv'))
+
+    data = pd.read_csv(read_from_s3(bucket_name, f'{location}/{year}.csv'), usecols=['ORIGIN','FL_DATE','OP_CARRIER_FL_NUM', 'DEP_DELAY'])
 
     processed_df = process_data(data)
 

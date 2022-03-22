@@ -42,7 +42,6 @@ def plot_airport(df, origin, year, location, bucket_name):
     ax.legend(custom_lines, ['Normal Delays', 'Unusual Delays'])
     plt.setp( ax.xaxis.get_majorticklabels(), rotation=45)
 
-    # change funtion save_img_to_folder to save_img_to_bucket
     res = save_img_to_bucket(fig, bucket_name, f'{location}/{year}-{origin}.png')
     plt.close()
     return res

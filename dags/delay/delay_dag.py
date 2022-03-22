@@ -12,11 +12,11 @@ from delay.tasks.plot import plot_generator
 from utils.functions import read_dbconn_from_env, read_dbconn_from_var
 
 # Env vars and definitions
-db_data = read_dbconn_from_var() #read_dbconn_from_env()
+db_data = read_dbconn_from_var()
 
 BUCKET = Variable.get('bucket_name')
-RAW_DATA = Variable.get('raw_data_dir') #os.getenv('DATA_LOCATION')
-PLOT_DIR = Variable.get('plot_dir') #os.getenv('PLOT_DIR')
+RAW_DATA = Variable.get('raw_data_dir') 
+PLOT_DIR = Variable.get('plot_dir') 
 
 
 # Dag definition

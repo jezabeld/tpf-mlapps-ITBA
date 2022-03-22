@@ -3,7 +3,7 @@ resource "aws_mwaa_environment" "mwaaEnv" {
     airflow_configuration_options   = var.airflow_config
     airflow_version                 = "2.2.2"
     dag_s3_path                     = var.dag_s3_path
-    environment_class               = "mw1.small"
+    environment_class               = "mw1.medium"
     execution_role_arn              = var.role_arn
     max_workers                     = 2
     min_workers                     = 1
@@ -28,8 +28,8 @@ resource "aws_mwaa_environment" "mwaaEnv" {
         }
 
         task_logs {
-            enabled                   = true
-            log_level                 = "INFO"
+            enabled    = true
+            log_level  = "INFO"
         }
 
         webserver_logs {

@@ -153,3 +153,4 @@ __pycache__/
 .terraform*
 terraform.tfvars
 *.dot
+*.backup*

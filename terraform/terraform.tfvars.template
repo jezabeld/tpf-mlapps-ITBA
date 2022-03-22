@@ -13,6 +13,8 @@ db_schema_name = "postgres"
 # to run the project this variables should'n be changed.
 requirements_s3_path = "config/requirements.txt"
 airflow_config = {"core.dags_are_paused_at_creation" = "False",
+                    "celery.sync_parallelism" = 1,
+                    "celery.worker_autoscale" = "1,1",
                     "secrets.backend" = "airflow.providers.amazon.aws.secrets.secrets_manager.SecretsManagerBackend",
                     "secrets.backend_kwargs" = 	"{\"connections_prefix\" : \"mwaa/connections/\", \"variables_prefix\" : \"mwaa/variables/\"}"
 }
@@ -21,7 +23,7 @@ airflow_config = {"core.dags_are_paused_at_creation" = "False",
 # profile = "default"
 # region = "us-east-1"
 # vpc_cidr = "10.192.0.0/16"
-# subnet_cidrs = ["10.192.10.0/24", "10.192.11.0/24", "10.192.20.0/24", "10.192.21.0/24"]
+# subnet_cidrs = ["10.192.10.0/24", "10.192.11.0/24", "10.192.20.0/24", "10.192.21.0/24", "10.192.30.0/24", "10.192.31.0/24" ]
 # data_dir = "data"
 # plot_dir = "plot"
 # conn_var = "RDSpostgres"

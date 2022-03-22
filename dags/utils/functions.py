@@ -6,7 +6,7 @@ from matplotlib.backends.backend_agg import FigureCanvas
 import os
 import io
 
-### Gets the secret myconn from Secrets Manager
+### Gets the secret conn from Secrets Manager
 def read_dbconn_from_var(**kwargs):
     # ### set up Secrets Manager
     # hook = AwsBaseHook(client_type='secretsmanager')

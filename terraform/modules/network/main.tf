@@ -25,7 +25,7 @@ resource "aws_subnet" "prisubnets2" {
     count                           = 2
     assign_ipv6_address_on_creation = false
     availability_zone               = count.index % 2 == 0 ? "${var.region}e" : "${var.region}f"
-    cidr_block                      = var.subnet_cidrs[count.index]
+    cidr_block                      = var.subnet_cidrs[count.index + 4]
     map_public_ip_on_launch         = false
     tags                             = merge({Name = "mwaa-prisub${count.index}-ecs"}, var.v_tags)
 
