@@ -2,12 +2,19 @@
 resource "aws_ecs_cluster" "cluster" {
     capacity_providers = []
     name               = "superset-cluster"
-    tags               = {}
+    tags               = var.v_tags
 
     setting {
         name  = "containerInsights"
         value = "disabled"
     }
+}
+
+# aws_cloudwatch_log_group.ecs_loggroup
+resource "aws_cloudwatch_log_group" "ecs_loggroup" {
+  name              = "/ecs/superset_webserver"
+  retention_in_days = 7
+  tags              = var.v_tags
 }
 
 data "aws_iam_role" "ecs_task_execution_role" {
@@ -28,7 +35,6 @@ resource "aws_ecs_task_definition" "superset_webserver" {
                     options   = {
                         awslogs-group         = "/ecs/superset_webserver"
                         awslogs-region        = "${var.region}"
-                        awslogs-create-group  = "true"
                         awslogs-stream-prefix = "ecs"
                     }
                 }
@@ -60,16 +66,9 @@ resource "aws_ecs_task_definition" "superset_webserver" {
         operating_system_family = "LINUX"
     }
     depends_on = [
-      aws_ecs_cluster.cluster
+      aws_ecs_cluster.cluster,
+      aws_cloudwatch_log_group.ecs_loggroup
     ]
-
-        provisioner "local-exec" {
-        when    = destroy
-        command = <<EOF
-aws logs describe-log-groups --query 'logGroups[*].logGroupName' --output table | \
-awk '{print $2}' | grep ^/ecs/superset_webserver | while read x; do  echo "deleting $x"; aws logs delete-log-group --log-group-name $x; done
-EOF
-    }
 }
 
 # module.superset.aws_lb_target_group.target_group:
@@ -132,8 +131,8 @@ resource "aws_lb_listener" "listener" {
     load_balancer_arn = aws_alb.superset_load_balancer.arn
     port              = 80
     protocol          = "HTTP"
-    tags              = {}
-    tags_all          = {}
+    tags              = var.v_tags
+    tags_all          = var.v_tags
 
     default_action {
         target_group_arn = aws_lb_target_group.target_group.arn
@@ -145,7 +144,7 @@ resource "aws_lb_listener" "listener" {
       aws_lb_target_group.target_group
     ]
 }
-# module.superset.aws_ecs_service.superset_server:
+
 # module.superset.aws_ecs_service.superset_server:
 resource "aws_ecs_service" "superset_server" {
     cluster                            = aws_ecs_cluster.cluster.arn
@@ -155,7 +154,6 @@ resource "aws_ecs_service" "superset_server" {
     enable_ecs_managed_tags            = true
     enable_execute_command             = false
     health_check_grace_period_seconds  = 0
-    #iam_role                           = "aws-service-role"
     launch_type                        = "FARGATE"
     name                               = "superset_server"
     platform_version                   = "LATEST"

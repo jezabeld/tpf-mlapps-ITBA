@@ -8,12 +8,13 @@ terraform {
 }
 
 provider "aws" {
-	profile = var.profile #"default"
+	profile = var.profile 
 	region  = var.region
 }
 
 module "bucket" {
   source = "./modules/bucket"
+
   v_tags        = var.tags
   profile       = var.profile
   dag_s3_path   = var.dag_s3_path
@@ -21,6 +22,7 @@ module "bucket" {
 
 module "network" {
   source        = "./modules/network"
+
   v_tags        = var.tags
   region        = var.region
   vpc_cidr      = var.vpc_cidr
@@ -33,7 +35,6 @@ module "database" {
   v_tags            = var.tags
   RDSpassword       = var.RDSpassword
   db_schema_name    = var.db_schema_name
-
   vpc_id            = module.network.vpc_id
   pri_subnet_ids    = module.network.pri_subnet_ids
   securitygroup_id  = module.network.securitygroup_id
@@ -44,7 +45,7 @@ module "iam" {
 
   v_tags      = var.tags
   env_name    = var.env_name
-  bucket_name = module.bucket.bucket_name #var.bucket_name
+  bucket_name = module.bucket.bucket_name
   account_id  = var.account_id
 }
 
@@ -53,7 +54,7 @@ module "airflow" {
 
   v_tags                = var.tags
   env_name              = var.env_name
-  bucket_name           = module.bucket.bucket_name #var.bucket_name
+  bucket_name           = module.bucket.bucket_name 
   requirements_s3_path  = var.requirements_s3_path
   conn_var              = var.conn_var
   db_schema_name        = var.db_schema_name
@@ -61,15 +62,16 @@ module "airflow" {
   dag_s3_path           = var.dag_s3_path
   data_dir              = var.data_dir
   plot_dir              = var.plot_dir
-  
   role_arn              = module.iam.role_arn
   securitygroup_id      = module.network.securitygroup_id
   pri_subnet_ids        = module.network.pri_subnet_ids
+  db_depends_on         = module.database.database
 }
 
 
 module "superset" {
   source          = "./modules/superset"
+  
   v_tags          = var.tags
   region          = var.region
   vpc_id          = module.network.vpc_id

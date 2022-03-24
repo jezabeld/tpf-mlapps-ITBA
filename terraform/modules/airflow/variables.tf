@@ -51,3 +51,13 @@ variable "data_dir" {
 variable "plot_dir" {
   type = string
 }
+
+variable "db_depends_on" {
+  type    = any
+  default = []
+}
+
+variable "log_group_names" {
+  type    = list
+  default = ["DAGProcessing", "Scheduler", "Task", "WebServer", "Worker"]
+}

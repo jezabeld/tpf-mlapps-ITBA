@@ -1,3 +1,11 @@
+# aws_cloudwatch_log_group.scheduler_loggroup
+resource "aws_cloudwatch_log_group" "scheduler_loggroup" {
+  count             = 5
+  name              = "airflow-${var.env_name}-${var.log_group_names[count.index]}"
+  retention_in_days = 7
+  tags              = var.v_tags
+}
+
 # aws_mwaa_environment.mwaaEnv:
 resource "aws_mwaa_environment" "mwaaEnv" {
     airflow_configuration_options   = var.airflow_config
@@ -50,14 +58,7 @@ resource "aws_mwaa_environment" "mwaaEnv" {
         subnet_ids         = var.pri_subnet_ids
     }
 
-    provisioner "local-exec" {
-        when    = destroy
-        command = <<EOF
-aws logs describe-log-groups --query 'logGroups[*].logGroupName' --output table | \
-awk '{print $2}' | grep ^airflow-mwaaITBAenv | while read x; do  echo "deleting $x"; aws logs delete-log-group --log-group-name $x; done
-EOF
-    }
-
+    depends_on = [var.db_depends_on, aws_cloudwatch_log_group.scheduler_loggroup]
 }
 
 # aws_secretsmanager_secret.var_conn_id:

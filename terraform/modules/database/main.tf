@@ -17,7 +17,7 @@ resource "aws_db_instance" "rdspostgres" {
   deletion_protection                   = false
   enabled_cloudwatch_logs_exports       = []
   engine                                = "postgres"
-  engine_version                        = "11.1"
+  engine_version                        = "12.10"
   iam_database_authentication_enabled   = false
   identifier                            = "mwaa-postgres"
   instance_class                        = "db.t3.micro"
@@ -28,8 +28,8 @@ resource "aws_db_instance" "rdspostgres" {
   monitoring_interval                   = 0
   multi_az                              = false
   name                                  = "postgres"
-  option_group_name                     = "default:postgres-11"
-  parameter_group_name                  = "default.postgres11"
+  option_group_name                     = "default:postgres-12"
+  parameter_group_name                  = "default.postgres12"
   performance_insights_enabled          = true
   performance_insights_retention_period = 7
   port                                  = 5432

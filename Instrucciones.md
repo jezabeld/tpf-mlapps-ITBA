@@ -52,3 +52,8 @@ operativo y configurar las credenciales de la cuenta siguiendo estos pasos: [AWS
     Una vez finalizado el trabajo se puede correr el comando `terraform destroy´ dentro de la crpeta de terraform para destruir todos los recursos creados. Este comando solicitará confirmación para procedeer y luego irá eliminando todos los recursos (incluyendo los archivos en el bucket creado, la instancia de la base de datos, logs y demas elememtos creados).
 
     
+## Posibles inconvenientes
+
+    - Version de la base de datos no disponible:
+    Error en terraform: "Error creating DB Instance: InvalidParameterCombination: Cannot find version XX.XX for postgres"
+    Solución: en el módulo database en la carpeta de terraform se deberá modificar el archivo main.tf para el recurso aws_db_instance.rdspostgres, reemplazando en la línea 20 el parámetro "engine_version" por una versión de postgres disponible. Se pueden comprobar las versiones desde la consola de AWS o utilizando aws cli: `aws rds describe-db-engine-versions --engine postgres`.
