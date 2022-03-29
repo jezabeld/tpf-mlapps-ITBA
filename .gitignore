@@ -127,3 +127,30 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Archivos locales
+notas.md
+*.csv
+kaggle.json
+*.delete
+/dags/examples
+logs/*
+*.jpg
+aws
+
+# from mwaa
+/git
+*.workspace
+dags/**/*.pyc
+/.idea
+/logs
+/db-data
+__pycache__/
+.DS_Store
+
+# from terraform
+*.tfstate*
+.terraform*
+terraform.tfvars
+*.dot
+*.backup*
