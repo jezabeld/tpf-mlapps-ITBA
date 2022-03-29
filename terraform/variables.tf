@@ -1,11 +1,4 @@
-
 variable "RDSpassword" {
-    type = string
-}
-variable "account_id" {
-    type = string
-}
-variable "bucket_name" {
     type = string
 }
 variable "dag_s3_path" {
@@ -39,6 +32,7 @@ variable "conn_var" {
 
 variable "db_schema_name" {
   type = string
+  default = "postgres"
 }
 
 variable "region" {

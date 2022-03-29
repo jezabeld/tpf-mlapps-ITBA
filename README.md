@@ -64,9 +64,11 @@ Se pueden seguir las instrucciones detalladas en el archivo [Instrucciones.md](.
 ## Sobre el desarrollo del proyecto
 
 El proyecto fue desarrollado en etapas para poder organizar mejor el trabajo y poder realizar las pruebas necesarias de forrma efectiva. Las etapas fueron pensadas en 3 estadíos generales:
-    - DEV: exploración de los datos y desarrollo de la lógica del DAG para procesamiento de los mismos. La arquitectura esta montada en containers de docker de modo provisiorio para avanzar con el desarrollo. Se optó por uns algoritmo simple basado en la distribución normal del tiempo de delay diario y por aeropuerto, marcando como anímalos aquellos datos que se encuentres por fuera de los 3 desvíos (valor que cubre aprox el 98% de los datos).
-    - TEST: una vez finalizado el desarrollo de la lógica, se comenzaron a hacer pruebas con la arquitectura específica, para ello se utilizó un container específico llamado Local-Runner brindado por AWS (info en [este link](https://docs.aws.amazon.com/mwaa/latest/userguide/tutorials-docker.html)).
-    - PROD: finalmente se crearon las plantillas de terraform y se realizaron las pruebas y ajustes sobre la arquitectura final.
+- DEV: exploración de los datos y desarrollo de la lógica del DAG para procesamiento de los mismos. La arquitectura esta montada en containers de docker de modo provisiorio para avanzar con el desarrollo. Se optó por un algoritmo simple basado en la distribución normal del tiempo de delay diario y por aeropuerto, marcando como anómalos aquellos datos que se encuentren por fuera de los 3 desvíos (valor que cubre aprox el 98% de los datos).
+    
+- TEST: una vez finalizado el desarrollo de la lógica, se comenzaron a hacer pruebas con la arquitectura específica, para ello se utilizó un container específico llamado Local-Runner brindado por AWS (info en [este link](https://docs.aws.amazon.com/mwaa/latest/userguide/tutorials-docker.html)).
+    
+- PROD: finalmente se crearon las plantillas de terraform y se realizaron las pruebas y ajustes sobre la arquitectura final.
 
 Para poder ir avanzando en los distintos estadíos se utilizáron 3 branches de git que pueden encontrarse en este proyecto (a excepcion de la branch de prod que será mergeada en main).
 Para conocer un detalle mayor sobre los pasos efectuados y las problematicas resueltas en las instancias de DEV y PROD, pueden encontrarse los archivos [Steps_DEV.md](https://github.com/jezabeld/tpf-mlapps-ITBA/blob/dev/Steps_DEV.md) y [Steps_TEST.md](https://github.com/jezabeld/tpf-mlapps-ITBA/blob/test/Steps_TEST.md) en las respectivas ramas.
@@ -88,7 +90,7 @@ A modo de resumen, algunas cuestiones que tuvieron que irse sorteando hasta cons
     
 - configuración del secret backend para Airflow (referencias: [Move your Apache Airflow connections and variables to AWS Secrets Manager](https://awscloudfeed.com/whats-new/open-source/move-your-apache-airflow-connections-and-variables-to-aws-secrets-manager), [connections-secrets-manager](https://docs.aws.amazon.com/mwaa/latest/userguide/connections-secrets-manager.html), [Airflow connections](https://docs.aws.amazon.com/mwaa/latest/userguide/samples-secrets-manager.html))
 
-- aprender a utilizar aws cli2 para aprovisionar infraestructura (referencias: [Istall AwsCli2](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html), [https://awscli.amazonaws.com/](https://awscli.amazonaws.com/v2/documentation/api/latest/reference/index.html), [Create Bucket](https://docs.aws.amazon.com/cli/latest/reference/s3api/create-bucket.html), ...)
+- aprender a utilizar aws cli2 para aprovisionar infraestructura (referencias: [Install AwsCli2](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html), [Documentación AWS Cli2](https://awscli.amazonaws.com/v2/documentation/api/latest/reference/index.html), [Create Bucket](https://docs.aws.amazon.com/cli/latest/reference/s3api/create-bucket.html), ...)
 
 - aprender a utilizar Terraform con AWS ([The Infrastructure Developer's Guide to Terraform: AWS Edition](https://cloudacademy.com/learning-paths/terraform-on-aws-1-2377/), [Build Infrastructure - Terraform AWS Example](https://learn.hashicorp.com/tutorials/terraform/aws-build?in=terraform/aws-get-started), [Module Composition](https://www.terraform.io/language/modules/develop/composition), [Provisioners](https://www.terraform.io/language/resources/provisioners/syntax))
 

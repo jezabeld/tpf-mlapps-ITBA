@@ -1,14 +1,10 @@
-# Mandatory variables
-
-bucket_name = ""
-account_id = ""
-
 # Optional to modify
-tags = {}
+tags = {
+        "Project" = "ITBA"
+    }
 
 env_name = "MyMWAAEnvironment"
 RDSpassword = "postgres"
-db_schema_name = "postgres"
 
 # to run the project this variables should'n be changed.
 requirements_s3_path = "config/requirements.txt"
@@ -22,6 +18,7 @@ airflow_config = {"core.dags_are_paused_at_creation" = "False",
 # Optional to overwrite default values
 # profile = "default"
 # region = "us-east-1"
+# db_schema_name = "postgres"
 # vpc_cidr = "10.192.0.0/16"
 # subnet_cidrs = ["10.192.10.0/24", "10.192.11.0/24", "10.192.20.0/24", "10.192.21.0/24", "10.192.30.0/24", "10.192.31.0/24" ]
 # data_dir = "data"

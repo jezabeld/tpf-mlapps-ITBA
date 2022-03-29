@@ -12,6 +12,9 @@ provider "aws" {
 	region  = var.region
 }
 
+# to get account_id
+data "aws_caller_identity" "current" {}
+
 module "bucket" {
   source = "./modules/bucket"
 
@@ -46,7 +49,7 @@ module "iam" {
   v_tags      = var.tags
   env_name    = var.env_name
   bucket_name = module.bucket.bucket_name
-  account_id  = var.account_id
+  account_id  = data.aws_caller_identity.current.account_id
 }
 
 module "airflow" {
